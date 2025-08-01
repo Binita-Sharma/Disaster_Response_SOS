@@ -1,0 +1,7 @@
+{
+  "name": "Disaster-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
