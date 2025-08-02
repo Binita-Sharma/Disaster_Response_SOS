@@ -1,17 +1,140 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 1
+<ion-header>
+  <ion-toolbar color="danger" class="resqnet-header">
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon slot="icon-only" name="menu"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    
+    <ion-title class="header-title">
+      <div class="logo-container">
+        <img src="assets/img/logo.png" alt="ResQNet Logo" class="header-logo">
+      </div>
+      <span>ResQNet</span>
     </ion-title>
+    
+    <ion-buttons slot="end">
+      <ion-button (click)="refresh()">
+        <ion-icon name="refresh" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button>
+        <ion-icon name="notifications" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true" class="ion-padding resqnet-page">
+  <!-- Hero Section with Circular Logo -->
+  <div class="hero-section">
+    <div class="logo-circle">
+      <img src="assets/img/sos.png" alt="ResQNet" class="main-logo">
+      <div class="logo-pulse"></div>
+    </div>
+    <h2 class="hero-text">Emergency Response Network</h2>
+  </div>
 
-  <app-explore-container name="Tab 1 page"></app-explore-container>
+  <!-- Stats Section -->
+  <ion-grid class="stats-grid">
+    <ion-row>
+      <ion-col size="6">
+        <ion-card class="stat-card">
+          <ion-card-header>
+            <ion-icon name="alert-circle" color="danger"></ion-icon>
+            <ion-card-title>Active Alerts</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            {{activeAlerts}} <span class="sub-text">Today</span>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="6">
+        <ion-card class="stat-card">
+          <ion-card-header>
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <ion-card-title>Resolved</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            {{resolvedCases}} <span class="sub-text">This Week</span>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Main SOS Button -->
+  <div class="sos-container">
+    <ion-button expand="block" class="sos-button" (click)="sendSOS()">
+      <div class="sos-content">
+        <ion-icon name="alert" class="sos-icon"></ion-icon>
+        <div class="sos-text">EMERGENCY SOS</div>
+      </div>
+    </ion-button>
+    <p class="hint-text">Press and hold for 3 seconds to activate</p>
+  </div>
+
+<!-- Emergency Categories Section -->
+<div class="emergency-section">
+  <h3 class="section-title">
+    <ion-icon name="warning" class="blink-icon"></ion-icon>
+    Emergency Categories
+  </h3>
+  
+  <div class="category-grid">
+    <div *ngFor="let category of emergencyCategories" class="category-card" 
+         (click)="sendCategory(category.type)" [ngClass]="category.color + '-card'">
+      <div class="category-content">
+        <div class="icon-container">
+          <ion-icon [name]="category.icon" class="category-icon"></ion-icon>
+          <div class="pulse-effect"></div>
+        </div>
+        <h4>{{category.type}}</h4>
+        <div class="emergency-number">24/7</div>
+      </div>
+      <div class="ripple-effect"></div>
+    </div>
+  </div>
+</div>
+
+  <!-- Pie Chart Section -->
+  <ion-card class="chart-card">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="pie-chart"></ion-icon>
+        Emergency Distribution
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="chart-container">
+        <canvas #pieChart></canvas>
+      </div>
+      <div class="chart-legend">
+        <div *ngFor="let item of chartData" class="legend-item">
+          <span class="legend-color" [style.background]="item.color"></span>
+          <span class="legend-label">{{item.label}} ({{item.value}}%)</span>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+<!-- Safety Tips Section -->
+<ion-card class="safety-tips-card">
+  <ion-card-header class="tips-header">
+    <ion-card-title>
+      <ion-icon name="shield-checkmark" class="pulse-icon"></ion-icon>
+      Safety Tips
+    </ion-card-title>
+  </ion-card-header>
+  <ion-card-content class="tips-content">
+    <ion-list lines="none" class="animated-list">
+      <ion-item *ngFor="let tip of safetyTips" class="tip-item" [style.--tip-color]="tip.color">
+        <div class="tip-bubble">
+          <ion-icon [name]="tip.icon" class="tip-icon"></ion-icon>
+        </div>
+        <ion-label class="tip-text">{{tip.text}}</ion-label>
+        <div class="wave-animation"></div>
+      </ion-item>
+    </ion-list>
+  </ion-card-content>
+</ion-card>
 </ion-content>
