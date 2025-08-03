@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import axios from 'axios';
 import { io, Socket } from 'socket.io-client';
 import { Chart, registerables } from 'chart.js';
+import { image } from 'ionicons/icons';
 
 @Component({
   selector: 'app-tab1',
@@ -25,37 +26,43 @@ emergencyCategories = [
     type: 'Fire', 
     icon: 'flame', 
     color: 'fire',
-    description: 'Report fires and explosions' 
+    description: 'Report fires and explosions', 
+    image: 'assets/img/fire.png'
   },
   { 
     type: 'Flood', 
     icon: 'water', 
     color: 'flood',
-    description: 'Report flooding and water emergencies' 
+    description: 'Report flooding and water emergencies',
+    image: 'assets/img/flood.png'
   },
   { 
     type: 'Medical', 
     icon: 'medkit', 
     color: 'medical',
-    description: 'Request medical assistance' 
+    description: 'Request medical assistance', 
+    image: 'assets/img/medical.png'
   },
   { 
     type: 'Earthquake', 
     icon: 'alert-circle', 
     color: 'earthquake',
-    description: 'Report seismic activity' 
+    description: 'Report seismic activity',
+    image: 'assets/img/earthquake.png'
   },
   { 
     type: 'Accident', 
     icon: 'car', 
     color: 'accident',
-    description: 'Report vehicle collisions' 
+    description: 'Report vehicle collisions',
+    image: 'assets/img/accident.png'
   },
   { 
     type: 'Other', 
     icon: 'help-circle', 
     color: 'other',
-    description: 'All other emergencies' 
+    description: 'All other emergencies',
+    image: 'assets/img/other.png'
   }
 ];
 

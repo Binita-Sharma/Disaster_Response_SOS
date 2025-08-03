@@ -85,8 +85,9 @@
          (click)="sendCategory(category.type)" [ngClass]="category.color + '-card'">
       <div class="category-content">
         <div class="icon-container">
-          <ion-icon [name]="category.icon" class="category-icon"></ion-icon>
           <div class="pulse-effect"></div>
+
+          <img [src]="category.image" alt="{{category.type}}" class="category-image" />
         </div>
         <h4>{{category.type}}</h4>
         <div class="emergency-number">24/7</div>

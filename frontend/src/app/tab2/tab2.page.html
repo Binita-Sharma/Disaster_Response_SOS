@@ -1,17 +1,27 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 2
-    </ion-title>
+  <ion-toolbar color="primary">
+    <ion-title>Live Alerts</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true" class="ion-padding">
 
-  <app-explore-container name="Tab 2 page"></app-explore-container>
+  <h2 class="feed-title">Recent Emergencies</h2>
+
+  <ion-card *ngFor="let alert of emergencyAlerts" class="alert-card">
+    <ion-item lines="none">
+      <ion-avatar slot="start">
+        <img [src]="alert.icon" alt="{{alert.type}}">
+      </ion-avatar>
+      <ion-label>
+        <h2>{{alert.type}} Alert</h2>
+        <p>{{alert.location}}</p>
+        <small>{{alert.time}}</small>
+      </ion-label>
+      <ion-badge [color]="alert.status === 'Active' ? 'danger' : 'success'">
+        {{alert.status}}
+      </ion-badge>
+    </ion-item>
+  </ion-card>
+
 </ion-content>
