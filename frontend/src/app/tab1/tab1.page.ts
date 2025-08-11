@@ -331,3 +331,13 @@ emergencyCategories = [
     await alert.present();
   }
 }
+//export class Tab3page{
+//  constructor(){} 
+//students = [
+//    { name: 'John Doe', age: 20, grade: 'A' },
+//    { name: 'Jane Smith', age: 22, grade: 'B' },
+//    { name: 'Alice Johnson', age: 21, grade: 'A'  },
+//    { name: 'Bob Brown', age: 23, grade: 'C' },
+//    { name: 'Charlie White', age: 19, grade: 'B' }
+//]
+//}

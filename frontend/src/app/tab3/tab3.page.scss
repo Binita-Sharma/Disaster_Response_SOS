@@ -1,0 +1,228 @@
+/* Hero Banner */
+.hero-banner {
+  height: 200px;
+  background-image: url('assets/disaster-banner.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  margin: -16px -16px 16px -16px;
+  overflow: hidden;
+  
+  .banner-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    
+    .banner-title {
+      color: white;
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+    
+    .banner-subtitle {
+      color: rgba(255,255,255,0.9);
+      margin: 4px 0 0;
+      font-size: 1rem;
+    }
+  }
+}
+
+/* Profile Section */
+.profile-section {
+  margin-bottom: 24px;
+  
+  .profile-avatar-container {
+    position: relative;
+    display: inline-block;
+    
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      cursor: pointer;
+      position: relative;
+      
+      img {
+        border: 3px solid var(--ion-color-primary);
+      }
+      
+      .edit-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        
+        ion-icon {
+          color: white;
+          font-size: 24px;
+        }
+      }
+      
+      &:hover .edit-overlay {
+        opacity: 1;
+      }
+    }
+    
+    .verification-badge {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      border-radius: 12px;
+      padding: 4px 8px;
+      font-size: 12px;
+      
+      ion-icon {
+        font-size: 14px;
+        margin-right: 4px;
+      }
+    }
+  }
+  
+  .profile-name {
+    margin: 16px 0 4px;
+    font-weight: 600;
+  }
+  
+  .profile-email {
+    color: var(--ion-color-medium);
+    margin: 0 0 16px;
+    font-size: 14px;
+  }
+  
+  .profile-stats {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+    
+    .stat-item {
+      padding: 0 16px;
+      text-align: center;
+      
+      strong {
+        display: block;
+        font-size: 1.5rem;
+        color: var(--ion-color-primary);
+      }
+      
+      span {
+        font-size: 0.8rem;
+        color: var(--ion-color-medium);
+      }
+    }
+  }
+}
+
+/* Card Styles */
+ion-card {
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  
+  .card-header-image {
+    height: 100px;
+    overflow: hidden;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  
+  ion-card-header {
+    padding-bottom: 0;
+    
+    ion-card-title {
+      display: flex;
+      align-items: center;
+      font-size: 1.2rem;
+      
+      ion-icon {
+        margin-right: 8px;
+      }
+    }
+    
+    ion-card-subtitle {
+      font-size: 0.9rem;
+      color: var(--ion-color-medium);
+    }
+  }
+  
+  ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    
+    ion-avatar {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .relation, .location-type {
+      font-size: 0.8rem;
+      color: var(--ion-color-medium);
+      margin-top: 4px;
+    }
+  }
+}
+
+/* Settings Section */
+.settings-header {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  ion-card-title {
+    display: flex;
+    align-items: center;
+    
+    ion-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+.settings-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  
+  &.expanded {
+    max-height: 500px; /* Adjust based on content */
+  }
+  
+  ion-item {
+    --padding-start: 16px;
+  }
+}
+
+/* Emergency Button */
+.emergency-button-container {
+  position: sticky;
+  bottom: 20px;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  z-index: 10;
+  
+  .emergency-button {
+    --padding-top: 16px;
+    --padding-bottom: 16px;
+    --padding-start: 24px;
+    --padding-end: 24px;
+    font-weight: bold;
+    box-shadow: 0 4px 16px rgba(244, 67, 54, 0.4);
+  }
+}

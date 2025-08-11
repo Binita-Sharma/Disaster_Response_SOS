@@ -1,17 +1,76 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 3
-    </ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Profile & Settings</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
 
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+  <!-- Profile Section -->
+  <div class="profile-section ion-text-center">
+    <ion-avatar class="profile-avatar">
+      <img [src]="user.photo || 'assets/default-profile.png'" alt="Profile Photo">
+    </ion-avatar>
+    <h2>{{ user.name }}</h2>
+    <p>{{ user.email }}</p>
+    <ion-button fill="outline" size="small" (click)="changePhoto()">Change Photo</ion-button>
+  </div>
+
+  <!-- Emergency Contacts -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Emergency Contacts</ion-card-title>
+    </ion-card-header>
+    <ion-list>
+      <ion-item *ngFor="let contact of emergencyContacts">
+        <ion-label>
+          <h3>{{ contact.name }}</h3>
+          <p>{{ contact.phone }}</p>
+        </ion-label>
+        <ion-button fill="clear" color="warning" (click)="editContact(contact)">Edit</ion-button>
+        <ion-button fill="clear" color="danger" (click)="deleteContact(contact)">Delete</ion-button>
+      </ion-item>
+    </ion-list>
+    <ion-button expand="block" color="success" (click)="addContact()">Add New Contact</ion-button>
+  </ion-card>
+
+  <!-- Saved Locations -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Saved Locations</ion-card-title>
+    </ion-card-header>
+    <ion-list>
+      <ion-item *ngFor="let location of savedLocations">
+        <ion-icon name="location-outline" slot="start"></ion-icon>
+        <ion-label>{{ location.name }}</ion-label>
+        <ion-button fill="clear" color="danger" (click)="deleteLocation(location)">Remove</ion-button>
+      </ion-item>
+    </ion-list>
+    <ion-button expand="block" (click)="addLocation()">Add Location</ion-button>
+  </ion-card>
+
+  <!-- Settings -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>App Settings</ion-card-title>
+    </ion-card-header>
+    <ion-item>
+      <ion-label>Dark Mode</ion-label>
+      <ion-toggle [(ngModel)]="settings.darkMode" (ionChange)="toggleDarkMode()"></ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-label>Notifications</ion-label>
+      <ion-toggle [(ngModel)]="settings.notifications"></ion-toggle>
+    </ion-item>
+  </ion-card>
+
+  <!-- Account -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Account</ion-card-title>
+    </ion-card-header>
+    <ion-button expand="block" (click)="changePassword()">Change Password</ion-button>
+    <ion-button expand="block" color="danger" (click)="logout()">Logout</ion-button>
+  </ion-card>
+
 </ion-content>
