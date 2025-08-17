@@ -33,7 +33,7 @@ export class Tab2Page {
       location: 'River Bank Road, Block B',
       time: '30 mins ago',
       status: 'Resolved'
-    }
+    },
   ];
 
 }

@@ -35,7 +35,9 @@
                 "output": "assets"
               }
             ],
-            "styles": ["src/global.scss", "src/theme/variables.scss"],
+            "styles": ["src/global.scss",
+             "src/theme/variables.scss"
+            ],
             "scripts": [
                "node_modules/chart.js/dist/chart.umd.js"
             ],
@@ -131,7 +133,10 @@
     }
   },
   "cli": {
-    "schematicCollections": ["@ionic/angular-toolkit"]
+    "schematicCollections": [
+      "@ionic/angular-toolkit"
+    ],
+    "analytics": "17738cac-71f9-4f8b-9dc1-ac5f70bee8d4"
   },
   "schematics": {
     "@ionic/angular-toolkit:component": {
