@@ -318,3 +318,285 @@
     }
   }
 }
+
+/* Enhanced Emergency Information Section Styles */
+.emergency-card {
+  margin: 16px;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border-left: 4px solid var(--ion-color-warning);
+  
+  &.emergency-mode {
+    border-left: 4px solid var(--ion-color-danger);
+    background: linear-gradient(135deg, rgba(var(--ion-color-danger-rgb), 0.1), rgba(var(--ion-color-dark-rgb), 0.05));
+    
+    .emergency-header {
+      background: linear-gradient(135deg, var(--ion-color-danger), var(--ion-color-danger-shade));
+    }
+  }
+
+  .emergency-alert-banner {
+    background: var(--ion-color-danger);
+    color: white;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    font-weight: 500;
+    
+    ion-icon {
+      margin-right: 8px;
+      animation: pulse 1.5s infinite;
+    }
+  }
+
+  .emergency-header {
+    background: linear-gradient(135deg, var(--ion-color-warning), var(--ion-color-warning-tint));
+    color: white;
+    padding: 16px;
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      
+      .title-section {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        
+        .pulse-icon {
+          animation: pulse 2s infinite;
+          font-size: 1.5rem;
+        }
+        
+        .readiness-badge {
+          font-size: 0.7rem;
+          font-weight: 600;
+        }
+      }
+    }
+    
+    .readiness-progress {
+      --progress-background: rgba(255, 255, 255, 0.3);
+      --progress-height: 6px;
+      border-radius: 3px;
+    }
+  }
+
+  .emergency-info-list {
+    padding: 8px 0;
+    
+    .info-item {
+      --padding-start: 16px;
+      --padding-end: 16px;
+      --min-height: 64px;
+      border-bottom: 1px solid var(--ion-color-light-shade);
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      
+      &:last-of-type {
+        border-bottom: none;
+      }
+      
+      &:hover {
+        background-color: rgba(var(--ion-color-primary-rgb), 0.05);
+      }
+      
+      &.expandable {
+        border-bottom: none;
+      }
+      
+      .item-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        
+        .item-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          flex: 1;
+          
+          .item-icon {
+            font-size: 1.3rem;
+            
+            &.pulse-animation {
+              animation: gentlePulse 3s infinite;
+            }
+          }
+          
+          ion-label {
+            h3 {
+              font-weight: 600;
+              font-size: 0.95rem;
+              margin-bottom: 4px;
+              color: var(--ion-color-dark);
+            }
+            
+            p {
+              font-size: 0.8rem;
+              color: var(--ion-color-medium);
+              margin: 0;
+            }
+          }
+        }
+        
+        .expand-icon {
+          transition: transform 0.3s ease;
+          color: var(--ion-color-medium);
+        }
+        
+        .contact-actions {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        
+        .forward-icon {
+          color: var(--ion-color-medium);
+        }
+      }
+    }
+    
+    .expandable-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background: var(--ion-color-light);
+      
+      &.expanded {
+        max-height: 300px;
+      }
+      
+      ion-item {
+        --padding-start: 56px;
+        --min-height: 48px;
+        --border-width: 0;
+        
+        ion-label {
+          h4 {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--ion-color-dark);
+            margin-bottom: 2px;
+          }
+          
+          p {
+            font-size: 0.8rem;
+            color: var(--ion-color-medium);
+            margin: 0;
+          }
+        }
+      }
+    }
+    
+    .sos-item {
+      --background: rgba(var(--ion-color-danger-rgb), 0.1);
+      margin: 16px;
+      border-radius: 12px;
+      
+      .sos-button {
+        --border-radius: 12px;
+        --padding-top: 16px;
+        --padding-bottom: 16px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        position: relative;
+        
+        &.pulse-alert {
+          animation: emergencyPulse 1s infinite;
+        }
+        
+        .sos-countdown {
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          background: white;
+          color: var(--ion-color-danger);
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          font-size: 0.8rem;
+          animation: countdownPulse 1s infinite;
+        }
+      }
+    }
+  }
+
+  .quick-actions {
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid var(--ion-color-light-shade);
+    padding: 12px 0;
+    
+    ion-button {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      font-size: 0.8rem;
+      color: var(--ion-color-medium);
+      
+      ion-icon {
+        font-size: 1rem;
+        margin-right: 4px;
+      }
+    }
+  }
+}
+
+/* Animations */
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes gentlePulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes emergencyPulse {
+  0% { 
+    box-shadow: 0 0 0 0 rgba(var(--ion-color-danger-rgb), 0.7);
+    transform: scale(1);
+  }
+  70% { 
+    box-shadow: 0 0 0 10px rgba(var(--ion-color-danger-rgb), 0);
+    transform: scale(1.02);
+  }
+  100% { 
+    box-shadow: 0 0 0 0 rgba(var(--ion-color-danger-rgb), 0);
+    transform: scale(1);
+  }
+}
+
+@keyframes countdownPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* Responsive Design */
+@media (max-width: 380px) {
+  .emergency-card {
+    margin: 8px;
+    
+    .quick-actions {
+      flex-direction: column;
+      gap: 8px;
+      
+      ion-button {
+        justify-content: center;
+      }
+    }
+  }
+}

@@ -9,8 +9,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './tab3.page.html',
   styleUrls: ['./tab3.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule,]
-  
+  imports: [IonicModule, CommonModule, FormsModule]
 })
 export class Tab3Page implements OnInit {
   contentScrolled = false;
@@ -18,6 +17,7 @@ export class Tab3Page implements OnInit {
   showConfetti = false;
   confettiPieces: any[] = [];
   
+  // Expanded user object with medical info
   user = {
     name: 'Alex Johnson',
     profileImage: '',
@@ -26,7 +26,8 @@ export class Tab3Page implements OnInit {
     responseLevel: 'Advanced',
     medicalInfo: {
       bloodType: 'O+',
-      allergies: ['Penicillin', 'Peanuts']
+      allergies: ['Penicillin', 'Peanuts'],
+      medications: ['Insulin', 'Blood pressure medication']
     }
   };
   
@@ -54,10 +55,22 @@ export class Tab3Page implements OnInit {
     locationSharing: true
   };
   
-  get preparednessScore(): number {
-    const completed = this.preparednessItems.filter(item => item.completed).length;
-    return Math.round((completed / this.preparednessItems.length) * 100);
-  }
+  // New properties for enhanced emergency features
+  expandedSections = {
+    medical: false,
+    contacts: false,
+    kit: false
+  };
+
+  isEmergencyMode = false;
+  sosCountdown = 0;
+  sosTimer: any;
+
+  emergencyKitStatus = {
+    complete: false,
+    itemsChecked: 5,
+    totalItems: 8
+  };
 
   constructor(
     private animationCtrl: AnimationController,
@@ -218,5 +231,117 @@ export class Tab3Page implements OnInit {
   logout() {
     console.log('User logged out');
     // Implement logout logic
+  }
+
+  // New methods for enhanced emergency features
+  toggleExpand(section: string) {
+    this.expandedSections[section as keyof typeof this.expandedSections] = 
+      !this.expandedSections[section as keyof typeof this.expandedSections];
+  }
+
+  toggleEmergencyMode() {
+    this.isEmergencyMode = !this.isEmergencyMode;
+    if (this.isEmergencyMode) {
+      this.triggerHapticFeedback('heavy');
+    }
+  }
+
+  calculateReadinessScore(): number {
+    let score = 0;
+    if (this.user.medicalInfo.bloodType) score += 25;
+    if (this.emergencyContacts.length > 0) score += 25;
+    if (this.emergencyKitStatus.complete) score += 25;
+    if (this.user.medicalInfo.allergies?.length) score += 25;
+    return Math.min(score, 100);
+  }
+
+  getReadinessColor(): string {
+    const score = this.calculateReadinessScore();
+    if (score >= 75) return 'success';
+    if (score >= 50) return 'warning';
+    return 'danger';
+  }
+
+  async triggerSOS() {
+    if (this.sosCountdown > 0) return;
+    
+    this.sosCountdown = 5;
+    const alert = await this.alertCtrl.create({
+      header: 'EMERGENCY SOS',
+      message: 'Emergency alert will trigger in 5 seconds. Cancel to abort.',
+      buttons: [
+        {
+          text: 'CANCEL',
+          role: 'cancel',
+          handler: () => {
+            clearInterval(this.sosTimer);
+            this.sosCountdown = 0;
+          }
+        }
+      ]
+    });
+    
+    await alert.present();
+    
+    this.sosTimer = setInterval(() => {
+      this.sosCountdown--;
+      if (this.sosCountdown <= 0) {
+        clearInterval(this.sosTimer);
+        this.sendEmergencyAlert();
+      }
+    }, 1000);
+  }
+
+  sendEmergencyAlert() {
+    console.log('EMERGENCY ALERT TRIGGERED!');
+    // Implement actual emergency alert functionality
+    this.triggerHapticFeedback('heavy');
+  }
+
+  triggerHapticFeedback(type: 'light' | 'medium' | 'heavy') {
+    // Implement haptic feedback using @capacitor/haptics
+    console.log(`Haptic feedback: ${type}`);
+  }
+
+  quickCall(event: Event, contact: any) {
+    event.stopPropagation();
+    console.log('Quick calling:', contact);
+    // Implement calling functionality
+  }
+
+  editBloodType(event: Event) {
+    event.stopPropagation();
+    console.log('Edit blood type');
+  }
+
+  editAllergies(event: Event) {
+    event.stopPropagation();
+    console.log('Edit allergies');
+  }
+
+  checkEmergencyKit() {
+    console.log('Check emergency kit');
+  }
+
+  viewEmergencyPlan() {
+    console.log('View emergency plan');
+  }
+
+  shareEmergencyInfo() {
+    console.log('Share emergency info');
+  }
+
+  printEmergencyCard() {
+    console.log('Print emergency card');
+  }
+
+  testEmergencyAlert() {
+    console.log('Test emergency alert');
+    this.triggerHapticFeedback('medium');
+  }
+
+  get preparednessScore(): number {
+    const completed = this.preparednessItems.filter(item => item.completed).length;
+    return Math.round((completed / this.preparednessItems.length) * 100);
   }
 }

@@ -49,47 +49,181 @@
     </div>
   </div>
 
-  <!-- Emergency Information Section -->
-  <ion-card class="emergency-card">
-    <ion-card-header>
-      <ion-card-title>
-        <ion-icon name="warning" class="section-icon"></ion-icon>
-        Emergency Information
-      </ion-card-title>
-      <ion-button fill="clear" size="small" (click)="editEmergencyInfo()">
-        <ion-icon name="pencil" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-card-header>
+<!-- Enhanced Emergency Information Section -->
+<ion-card class="emergency-card" [class.emergency-mode]="isEmergencyMode">
+  <div class="emergency-alert-banner" *ngIf="isEmergencyMode">
+    <ion-icon name="alert-circle"></ion-icon>
+    <span>Emergency Mode Active</span>
+    <ion-button fill="clear" size="small" color="light" (click)="toggleEmergencyMode()">
+      Disable
+    </ion-button>
+  </div>
 
-    <ion-list lines="none">
+  <ion-card-header class="emergency-header">
+    <div class="header-content">
+      <div class="title-section">
+        <ion-icon name="warning" class="pulse-icon"></ion-icon>
+        <ion-card-title>Emergency Readiness</ion-card-title>
+        <ion-badge [color]="getReadinessColor()" class="readiness-badge">
+          {{ calculateReadinessScore() }}% Ready
+        </ion-badge>
+      </div>
+      <ion-button fill="clear" size="small" (click)="toggleEmergencyMode()" [color]="isEmergencyMode ? 'light' : 'primary'">
+        <ion-icon [name]="isEmergencyMode ? 'flash-off' : 'flash'" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+    
+    <ion-progress-bar 
+      [value]="calculateReadinessScore() / 100" 
+      [color]="getReadinessColor()"
+      class="readiness-progress">
+    </ion-progress-bar>
+  </ion-card-header>
+
+  <ion-list lines="none" class="emergency-info-list">
+    <!-- Medical Information with Expandable Details -->
+    <ion-item class="info-item expandable" (click)="toggleExpand('medical')" [class.expanded]="expandedSections.medical">
+      <div class="item-content">
+        <div class="item-header">
+          <ion-icon 
+            name="medkit" 
+            [color]="user.medicalInfo.bloodType ? 'success' : 'warning'" 
+            class="item-icon pulse-animation">
+          </ion-icon>
+          <ion-label>
+            <h3>Medical Information</h3>
+            <p>{{ user.medicalInfo.bloodType ? 'Complete' : 'Needs attention' }}</p>
+          </ion-label>
+        </div>
+        <ion-icon 
+          [name]="expandedSections.medical ? 'chevron-up' : 'chevron-down'" 
+          class="expand-icon">
+        </ion-icon>
+      </div>
+    </ion-item>
+
+    <div class="expandable-content" [class.expanded]="expandedSections.medical">
       <ion-item>
-        <ion-icon slot="start" name="medkit" color="danger"></ion-icon>
+        <ion-icon name="water" slot="start" color="danger"></ion-icon>
         <ion-label>
-          <h3>Blood Type</h3>
+          <h4>Blood Type</h4>
           <p>{{ user.medicalInfo.bloodType || 'Not specified' }}</p>
         </ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-icon slot="start" name="alert-circle" color="warning"></ion-icon>
-        <ion-label>
-          <h3>Allergies</h3>
-          <p>{{ user.medicalInfo.allergies?.join(', ') || 'None reported' }}</p>
-        </ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-icon slot="start" name="heart" color="danger"></ion-icon>
-        <ion-label>
-          <h3>Emergency Contacts</h3>
-          <p>{{ emergencyContacts.length }} contacts registered</p>
-        </ion-label>
-        <ion-button slot="end" fill="clear" (click)="manageContacts()">
-          <ion-icon name="chevron-forward" slot="icon-only"></ion-icon>
+        <ion-button fill="clear" size="small" (click)="editBloodType($event)">
+          <ion-icon name="create" slot="icon-only"></ion-icon>
         </ion-button>
       </ion-item>
-    </ion-list>
-  </ion-card>
 
-  <!-- Disaster Preparedness Section -->
+      <ion-item>
+        <ion-icon name="alert-circle" slot="start" color="warning"></ion-icon>
+        <ion-label>
+          <h4>Allergies & Conditions</h4>
+          <p>{{ user.medicalInfo.allergies?.join(', ') || 'None reported' }}</p>
+        </ion-label>
+        <ion-button fill="clear" size="small" (click)="editAllergies($event)">
+          <ion-icon name="create" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <ion-item>
+        <ion-icon name="medical" slot="start" color="tertiary"></ion-icon>
+        <ion-label>
+          <h4>Medications</h4>
+          <p>{{ user.medicalInfo.medications?.join(', ') || 'None listed' }}</p>
+        </ion-label>
+      </ion-item>
+    </div>
+
+    <!-- Emergency Contacts with Quick Action -->
+    <ion-item class="info-item" (click)="manageContacts()">
+      <div class="item-content">
+        <div class="item-header">
+          <ion-icon 
+            name="people" 
+            [color]="emergencyContacts.length > 0 ? 'success' : 'danger'" 
+            class="item-icon">
+          </ion-icon>
+          <ion-label>
+            <h3>Emergency Contacts</h3>
+            <p>{{ emergencyContacts.length }} contact(s) configured</p>
+          </ion-label>
+        </div>
+        <div class="contact-actions">
+          <ion-button fill="clear" size="small" (click)="quickCall($event, emergencyContacts[0])" *ngIf="emergencyContacts.length > 0">
+            <ion-icon name="call" color="success"></ion-icon>
+          </ion-button>
+          <ion-icon name="chevron-forward" class="forward-icon"></ion-icon>
+        </div>
+      </div>
+    </ion-item>
+
+    <!-- Emergency Kit Status -->
+    <ion-item class="info-item" (click)="checkEmergencyKit()">
+      <div class="item-content">
+        <div class="item-header">
+          <ion-icon 
+            name="briefcase" 
+            [color]="emergencyKitStatus.complete ? 'success' : 'warning'" 
+            class="item-icon">
+          </ion-icon>
+          <ion-label>
+            <h3>Emergency Kit</h3>
+            <p>{{ emergencyKitStatus.complete ? 'Complete' : 'Needs review' }}</p>
+          </ion-label>
+        </div>
+        <ion-badge [color]="emergencyKitStatus.complete ? 'success' : 'warning'">
+          {{ emergencyKitStatus.itemsChecked }}/{{ emergencyKitStatus.totalItems }}
+        </ion-badge>
+      </div>
+    </ion-item>
+
+    <!-- Emergency Plan -->
+    <ion-item class="info-item" (click)="viewEmergencyPlan()">
+      <div class="item-content">
+        <div class="item-header">
+          <ion-icon name="document-text" color="primary" class="item-icon"></ion-icon>
+          <ion-label>
+            <h3>Emergency Plan</h3>
+            <p>Family meeting points & procedures</p>
+          </ion-label>
+        </div>
+        <ion-icon name="document" color="medium"></ion-icon>
+      </div>
+    </ion-item>
+
+    <!-- SOS Quick Action -->
+    <ion-item class="sos-item" *ngIf="isEmergencyMode">
+      <ion-button 
+        expand="block" 
+        color="danger" 
+        fill="solid" 
+        (click)="triggerSOS()"
+        class="sos-button pulse-alert">
+        <ion-icon name="alert-circle" slot="start"></ion-icon>
+        EMERGENCY SOS
+        <div class="sos-countdown" *ngIf="sosCountdown > 0">{{ sosCountdown }}</div>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <!-- Quick Actions Footer -->
+  <ion-card-content class="quick-actions" *ngIf="!isEmergencyMode">
+    <ion-button fill="clear" size="small" (click)="shareEmergencyInfo()">
+      <ion-icon name="share-social" slot="start"></ion-icon>
+      Share Info
+    </ion-button>
+    <ion-button fill="clear" size="small" (click)="printEmergencyCard()">
+      <ion-icon name="print" slot="start"></ion-icon>
+      Print Card
+    </ion-button>
+    <ion-button fill="clear" size="small" (click)="testEmergencyAlert()">
+      <ion-icon name="notifications" slot="start"></ion-icon>
+      Test Alert
+    </ion-button>
+  </ion-card-content>
+</ion-card>
+
+<!-- Disaster Preparedness Section -->
   <ion-card class="preparedness-card">
     <ion-card-header>
       <ion-card-title>
