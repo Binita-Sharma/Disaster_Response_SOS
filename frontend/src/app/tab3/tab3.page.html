@@ -21,7 +21,7 @@
     <div class="profile-content-wrapper">
       <div class="avatar-container" (click)="changeProfilePhoto()" [class.edit-active]="isEditMode">
         <ion-avatar class="user-avatar">
-          <img [src]="user.profileImage || 'assets/images/default-avatar.png'" alt="User profile" />
+          <img [src]="user.profileImage || 'assets/img/profile.jpg'" alt="User profile" />
           <div class="edit-badge" *ngIf="isEditMode">
             <ion-icon name="camera"></ion-icon>
           </div>
