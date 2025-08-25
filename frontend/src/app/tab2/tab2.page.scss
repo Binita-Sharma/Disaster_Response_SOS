@@ -1,19 +1,410 @@
-.feed-title {
-  font-weight: bold;
-  margin-bottom: 15px;
+/* Enhanced Live Alerts Page Styles */
+.alert-header {
+  ion-toolbar {
+    --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-primary-shade));
+    
+    .header-title {
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    
+    ion-button {
+      position: relative;
+      
+      ion-badge {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        font-size: 10px;
+        padding: 2px 4px;
+      }
+    }
+    
+    .refreshing {
+      animation: pulse 1s infinite;
+    }
+    
+    .spinning {
+      animation: spin 1s linear infinite;
+    }
+  }
+  
+  .filter-toolbar {
+    --background: var(--ion-color-light);
+    --border-width: 0;
+    
+    ion-segment {
+      --background: transparent;
+      
+      ion-segment-button {
+        --indicator-color: var(--ion-color-primary);
+        --color: var(--ion-color-medium);
+        --color-checked: white;
+        min-height: 36px;
+      }
+    }
+  }
 }
 
-.alert-card {
-  margin-bottom: 12px;
-  border-left: 6px solid #ccc;
+.alert-content {
+  --background: var(--ion-color-light);
+  
+  .critical-alert-banner {
+    background: linear-gradient(135deg, var(--ion-color-danger), var(--ion-color-danger-shade));
+    color: white;
+    padding: 12px 16px;
+    margin: 0 0 16px;
+    
+    .banner-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      
+      .banner-text {
+        flex: 1;
+        padding: 0 12px;
+        
+        h3 {
+          margin: 0 0 4px;
+          font-size: 0.9rem;
+          font-weight: 600;
+        }
+        
+        p {
+          margin: 0;
+          font-size: 0.8rem;
+          opacity: 0.9;
+        }
+      }
+      
+      .pulse-icon {
+        animation: pulse 1.5s infinite;
+        font-size: 1.5rem;
+      }
+    }
+  }
+  
+  .map-overview {
+    margin: 0 16px 16px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--ion-color-primary);
+    color: white;
+    position: relative;
+    height: 120px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    
+    .map-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+      
+      .map-icon {
+        font-size: 2.5rem;
+        margin-bottom: 8px;
+      }
+      
+      p {
+        margin: 0 0 8px;
+        font-size: 0.9rem;
+      }
+      
+      .map-badge {
+        font-size: 0.7rem;
+      }
+    }
+  }
+  
+  .alert-summary {
+    background: white;
+    margin: 0 16px 16px;
+    border-radius: 12px;
+    padding: 16px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    
+    .summary-item {
+      text-align: center;
+      padding: 8px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      
+      &:active {
+        background: rgba(var(--ion-color-primary-rgb), 0.1);
+        transform: scale(0.95);
+      }
+      
+      ion-icon {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+      }
+      
+      h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--ion-color-dark);
+      }
+      
+      p {
+        margin: 4px 0 0;
+        font-size: 0.7rem;
+        color: var(--ion-color-medium);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+  }
+  
+  .feed-title {
+    padding: 0 16px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+    margin: 0 0 12px;
+  }
+  
+  .alert-list {
+    padding: 0 8px;
+    
+    .alert-card {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      --inner-padding-end: 0;
+      margin: 0 8px 12px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      background: white;
+      transition: all 0.3s ease;
+      
+      &.unread {
+        border-left: 4px solid var(--ion-color-primary);
+        background: rgba(var(--ion-color-primary-rgb), 0.05);
+      }
+      
+      &.critical {
+        background: linear-gradient(135deg, rgba(var(--ion-color-danger-rgb), 0.05), white);
+        border: 1px solid rgba(var(--ion-color-danger-rgb), 0.2);
+      }
+      
+      &:active {
+        transform: translateY(2px);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+      }
+      
+      .alert-indicator {
+        width: 4px;
+        height: 100%;
+        border-radius: 2px;
+        margin-right: 12px;
+        
+        &.indicator-high {
+          background: var(--ion-color-danger);
+        }
+        
+        &.indicator-medium {
+          background: var(--ion-color-warning);
+        }
+        
+        &.indicator-low {
+          background: var(--ion-color-success);
+        }
+      }
+      
+      .alert-avatar {
+        position: relative;
+        width: 48px;
+        height: 48px;
+        
+        .live-badge {
+          position: absolute;
+          bottom: -4px;
+          right: -4px;
+          background: white;
+          border-radius: 50%;
+          padding: 2px;
+          
+          ion-spinner {
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+      
+      .alert-details {
+        h2 {
+          font-weight: 600;
+          font-size: 0.95rem;
+          margin-bottom: 4px;
+          color: var(--ion-color-dark);
+        }
+        
+        .alert-location {
+          display: flex;
+          align-items: center;
+          font-size: 0.85rem;
+          color: var(--ion-color-medium);
+          margin: 0 0 6px;
+          
+          ion-icon {
+            margin-right: 4px;
+            font-size: 0.9rem;
+          }
+        }
+        
+        .alert-meta {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          
+          .priority-badge {
+            font-size: 0.65rem;
+            font-weight: 500;
+          }
+          
+          small {
+            font-size: 0.75rem;
+            color: var(--ion-color-medium);
+          }
+        }
+      }
+      
+      .alert-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 8px;
+        
+        .status-badge {
+          font-size: 0.7rem;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    
+    ion-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    
+    h3 {
+      color: var(--ion-color-medium);
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+    }
+    
+    p {
+      color: var(--ion-color-medium);
+      margin: 0;
+      font-size: 0.9rem;
+    }
+  }
+  
+  .floating-action {
+    position: sticky;
+    bottom: 20px;
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    z-index: 10;
+    
+    .emergency-button {
+      --border-radius: 24px;
+      --padding-top: 16px;
+      --padding-bottom: 16px;
+      --padding-start: 24px;
+      --padding-end: 24px;
+      font-weight: 600;
+      box-shadow: 0 4px 16px rgba(var(--ion-color-danger-rgb), 0.3);
+      animation: pulse 2s infinite;
+      
+      &:active {
+        animation: none;
+        transform: scale(0.95);
+      }
+    }
+  }
 }
 
-ion-avatar img {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
+/* Animations */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
-ion-badge {
-  font-size: 0.8rem;
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Angular Animation Definitions */
+:host {
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideInItem {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 380px) {
+  .alert-content {
+    .alert-summary {
+      margin: 0 8px 16px;
+      
+      .summary-item {
+        h3 {
+          font-size: 1.1rem;
+        }
+      }
+    }
+    
+    .feed-title {
+      padding: 0 8px;
+    }
+    
+    .alert-list {
+      .alert-card {
+        margin: 0 4px 8px;
+      }
+    }
+  }
 }

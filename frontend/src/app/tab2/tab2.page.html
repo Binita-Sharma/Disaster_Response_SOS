@@ -1,27 +1,151 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true" class="alert-header">
   <ion-toolbar color="primary">
-    <ion-title>Live Alerts</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="playNotificationSound()">
+        <ion-icon name="notifications" slot="icon-only"></ion-icon>
+        <ion-badge color="danger" *ngIf="unreadAlerts > 0">{{unreadAlerts}}</ion-badge>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="header-title">Live Emergency Alerts</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleAlertFilter()">
+        <ion-icon name="filter" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button (click)="refreshAlerts()" [class.refreshing]="isRefreshing">
+        <ion-icon [name]="isRefreshing ? 'refresh-circle' : 'refresh'" slot="icon-only" [class.spinning]="isRefreshing"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Alert Filters -->
+  <ion-toolbar *ngIf="showFilters" class="filter-toolbar">
+    <ion-segment [(ngModel)]="alertFilter" (ionChange)="applyFilters()">
+      <ion-segment-button value="all">
+        <ion-label>All</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="active">
+        <ion-label>Active</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="natural">
+        <ion-label>Natural</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="medical">
+        <ion-label>Medical</ion-label>
+      </ion-segment-button>
+    </ion-segment>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="ion-padding">
+<ion-content [fullscreen]="true" class="alert-content">
+  <!-- Real-time Alert Banner -->
+  <div *ngIf="criticalAlert" class="critical-alert-banner" @fadeIn>
+    <div class="banner-content">
+      <ion-icon name="warning" class="pulse-icon"></ion-icon>
+      <div class="banner-text">
+        <h3>CRITICAL ALERT: {{criticalAlert.type}}</h3>
+        <p>{{criticalAlert.location}} - {{criticalAlert.time}}</p>
+      </div>
+      <ion-button fill="clear" color="light" (click)="viewAlertDetails(criticalAlert)">
+        <ion-icon name="arrow-forward" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
 
-  <h2 class="feed-title">Recent Emergencies</h2>
+  <!-- Map Overview -->
+  <div class="map-overview" (click)="openMapView()">
+    <div class="map-placeholder">
+      <ion-icon name="map" class="map-icon"></ion-icon>
+      <p>Tap to view alerts on map</p>
+      <ion-badge color="danger" class="map-badge">{{emergencyAlerts.length}} active alerts</ion-badge>
+    </div>
+  </div>
 
-  <ion-card *ngFor="let alert of emergencyAlerts" class="alert-card">
-    <ion-item lines="none">
-      <ion-avatar slot="start">
+  <!-- Alert Summary -->
+  <div class="alert-summary">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="4">
+          <div class="summary-item" (click)="filterByType('natural')">
+            <ion-icon name="flash" color="warning"></ion-icon>
+            <h3>{{getAlertCount('natural')}}</h3>
+            <p>Natural</p>
+          </div>
+        </ion-col>
+        <ion-col size="4">
+          <div class="summary-item" (click)="filterByType('medical')">
+            <ion-icon name="medkit" color="danger"></ion-icon>
+            <h3>{{getAlertCount('medical')}}</h3>
+            <p>Medical</p>
+          </div>
+        </ion-col>
+        <ion-col size="4">
+          <div class="summary-item" (click)="filterByType('security')">
+            <ion-icon name="shield-checkmark" color="tertiary"></ion-icon>
+            <h3>{{getAlertCount('security')}}</h3>
+            <p>Security</p>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <h2 class="feed-title">Recent Emergency Alerts</h2>
+
+  <!-- Emergency Alerts List -->
+  <ion-list lines="none" class="alert-list">
+    <ion-item 
+      *ngFor="let alert of filteredAlerts" 
+      class="alert-card" 
+      [class.unread]="!alert.read"
+      [class.critical]="alert.priority === 'high'"
+      (click)="viewAlertDetails(alert)"
+      @slideInItem>
+      <div slot="start" class="alert-indicator" [class]="'indicator-' + alert.priority"></div>
+      
+      <ion-avatar slot="start" class="alert-avatar">
         <img [src]="alert.icon" alt="{{alert.type}}">
+        <div class="live-badge" *ngIf="alert.status === 'Active'">
+          <ion-spinner *ngIf="alert.status === 'Active'" name="circular" color="danger"></ion-spinner>
+        </div>
       </ion-avatar>
-      <ion-label>
+      
+      <ion-label class="alert-details">
         <h2>{{alert.type}} Alert</h2>
-        <p>{{alert.location}}</p>
-        <small>{{alert.time}}</small>
+        <p class="alert-location">
+          <ion-icon name="location"></ion-icon>
+          {{alert.location}}
+        </p>
+        <div class="alert-meta">
+          <ion-badge [color]="getPriorityColor(alert.priority)" class="priority-badge">
+            {{alert.priority}} priority
+          </ion-badge>
+          <small>{{alert.time}}</small>
+        </div>
       </ion-label>
-      <ion-badge [color]="alert.status === 'Active' ? 'danger' : 'success'">
-        {{alert.status}}
-      </ion-badge>
+      
+      <div slot="end" class="alert-actions">
+        <ion-badge [color]="alert.status === 'Active' ? 'danger' : 'success'" class="status-badge">
+          {{alert.status}}
+        </ion-badge>
+        <ion-button fill="clear" size="small" (click)="$event.stopPropagation(); navigateToLocation(alert)">
+          <ion-icon name="navigate" color="primary"></ion-icon>
+        </ion-button>
+      </div>
     </ion-item>
-  </ion-card>
+  </ion-list>
 
+  <!-- Empty State -->
+  <div *ngIf="filteredAlerts.length === 0" class="empty-state">
+    <ion-icon name="checkmark-done-circle" color="medium"></ion-icon>
+    <h3>No active alerts</h3>
+    <p>You're all caught up with emergency notifications</p>
+  </div>
+
+  <!-- Emergency Action Button -->
+  <div class="floating-action">
+    <ion-button (click)="reportEmergency()" class="emergency-button" color="danger">
+      <ion-icon name="alert" slot="start"></ion-icon>
+      Report Emergency
+    </ion-button>
+  </div>
 </ion-content>
