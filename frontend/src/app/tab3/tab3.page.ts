@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { AlertController, AnimationController, IonicModule, ModalController } from '@ionic/angular';
-import { Router } from '@angular/router';
+import { Component, ElementRef, ViewChild, OnInit, Renderer2, NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { AnimationController, IonicModule, IonSlides } from '@ionic/angular';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -9,109 +9,109 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './tab3.page.html',
   styleUrls: ['./tab3.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [IonicModule, CommonModule, FormsModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA], 
+  animations: [
+    trigger('slideIn', [
+      transition(':enter', [
+        style({ transform: 'translateY(20px)', opacity: 0 }),
+        animate('300ms ease-out', style({ transform: 'translateY(0)', opacity: 1 }))
+      ])
+    ]),
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('300ms ease-out', style({ opacity: 1 }))
+      ])
+    ])
+  ]
 })
 export class Tab3Page implements OnInit {
-  contentScrolled = false;
-  isEditMode = false;
-  showConfetti = false;
-  confettiPieces: any[] = [];
+  @ViewChild('confettiCanvas') confettiCanvas!: ElementRef;
+  @ViewChild(IonSlides) slides!: IonSlides;
   
-  // Expanded user object with medical info
+  isScrolled = false;
+  isEditMode = false;
+  
   user = {
     name: 'Alex Johnson',
-    profileImage: '',
-    role: 'Disaster Responder',
-    isVerified: true,
-    responseLevel: 'Advanced',
-    medicalInfo: {
-      bloodType: 'O+',
-      allergies: ['Penicillin', 'Peanuts'],
-      medications: ['Insulin', 'Blood pressure medication']
-    }
+    email: 'alex.johnson@example.com',
+    photo: '',
+    isActive: true,
+    joinDate: 'June 2022'
   };
   
-  quickStats = [
-    { value: '12', label: 'Missions', action: () => this.viewMissions() },
-    { value: '8', label: 'Trainings', action: () => this.viewTrainings() },
-    { value: '24', label: 'Badges', action: () => this.viewBadges() }
+  userStats = [
+    { value: '24', label: 'Connections', action: () => this.slideTo(0) },
+    { value: '8', label: 'Places', action: () => this.slideTo(1) },
+    { value: '142', label: 'Points', action: () => this.showPointsInfo() }
   ];
   
   emergencyContacts = [
-    { name: 'Sarah Smith', relationship: 'Spouse', phone: '(555) 123-4567', isPrimary: true },
-    { name: 'Dr. Emily Wilson', relationship: 'Physician', phone: '(555) 987-6543', isPrimary: false }
+    { name: 'Sarah Smith', phone: '(555) 123-4567', relationship: 'Spouse', photo: '', isEmergency: true },
+    { name: 'Michael Johnson', phone: '(555) 987-6543', relationship: 'Brother', photo: '', isEmergency: true },
+    { name: 'Dr. Emily Wilson', phone: '(555) 456-7890', relationship: 'Physician', photo: '', isEmergency: false }
   ];
   
-  preparednessItems = [
-    { name: 'Emergency Kit', description: '72-hour supply ready', icon: 'briefcase', completed: true },
-    { name: 'Evacuation Plan', description: 'Family meeting points', icon: 'map', completed: true },
-    { name: 'Documents', description: 'Important papers secured', icon: 'document', completed: false },
-    { name: 'First Aid Certified', description: 'Current certification', icon: 'medkit', completed: true }
+  savedLocations = [
+    { name: 'Home', address: '123 Main St, Apt 4B' },
+    { name: 'Work', address: '456 Business Ave, Floor 3' },
+    { name: 'Gym', address: '789 Fitness Lane' }
   ];
   
   settings = {
     darkMode: false,
-    emergencyAlerts: true,
-    locationSharing: true
+    notifications: true
   };
   
-  // New properties for enhanced emergency features
-  expandedSections = {
-    medical: false,
-    contacts: false,
-    kit: false
-  };
-
-  isEmergencyMode = false;
-  sosCountdown = 0;
-  sosTimer: any;
-
-  emergencyKitStatus = {
-    complete: false,
-    itemsChecked: 5,
-    totalItems: 8
+  slideOpts = {
+    initialSlide: 0,
+    speed: 300,
+    slidesPerView: 1,
+    spaceBetween: 20,
+    centeredSlides: true,
+    effect: 'slide'
   };
 
   constructor(
     private animationCtrl: AnimationController,
-    private alertCtrl: AlertController,
-    private modalCtrl: ModalController,
-    private router: Router
+    private renderer: Renderer2
   ) {}
-
+  
   ngOnInit() {
     this.setupAvatarAnimation();
   }
   
   setupAvatarAnimation() {
-    const avatar = document.querySelector('.user-avatar');
+    const avatar = document.querySelector('.profile-avatar');
     if (avatar) {
       const animation = this.animationCtrl.create()
         .addElement(avatar)
-        .duration(2000)
+        .duration(1500)
         .iterations(Infinity)
         .keyframes([
-          { offset: 0, transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(var(--ion-color-primary-rgb), 0.4)' },
-          { offset: 0.5, transform: 'scale(1.03)', boxShadow: '0 0 0 8px rgba(var(--ion-color-primary-rgb), 0)' },
-          { offset: 1, transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(var(--ion-color-primary-rgb), 0)' }
+          { offset: 0, transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(110, 142, 251, 0.4)' },
+          { offset: 0.7, transform: 'scale(1.05)', boxShadow: '0 0 0 10px rgba(110, 142, 251, 0)' },
+          { offset: 1, transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(110, 142, 251, 0)' }
         ]);
       animation.play();
     }
   }
   
-  handleScroll(event: any) {
-    this.contentScrolled = event.detail.scrollTop > 30;
+  onScroll(event: any) {
+    this.isScrolled = event.detail.scrollTop > 30;
   }
   
   toggleEditMode() {
     this.isEditMode = !this.isEditMode;
+    
     if (this.isEditMode) {
       this.pulseEditButton();
     }
   }
   
   pulseEditButton() {
-    const button = document.querySelector('.edit-mode-icon');
+    const button = document.querySelector('.edit-icon');
     if (button) {
       const animation = this.animationCtrl.create()
         .addElement(button)
@@ -126,222 +126,127 @@ export class Tab3Page implements OnInit {
     }
   }
   
-  triggerCelebration() {
-    this.showConfetti = true;
-    this.createConfetti();
-    setTimeout(() => this.showConfetti = false, 3000);
+  slideTo(index: number) {
+    this.slides.slideTo(index);
   }
   
-  createConfetti() {
-    const colors = [
-      'var(--ion-color-primary)',
-      'var(--ion-color-secondary)',
-      'var(--ion-color-tertiary)',
-      'var(--ion-color-success)',
-      'var(--ion-color-warning)',
-      'var(--ion-color-danger)'
-    ];
-    
-    this.confettiPieces = Array.from({ length: 50 }, () => ({
-      left: Math.random() * window.innerWidth,
-      delay: Math.random() * 2000,
-      color: colors[Math.floor(Math.random() * colors.length)]
-    }));
+  showPointsInfo() {
+    // Implement points info modal
+    console.log('Show points information');
   }
   
-  // Profile Actions
-  changeProfilePhoto() {
-    console.log('Change profile photo');
+  changePhoto() {
     // Implement photo change logic
+    console.log('Change photo clicked');
   }
   
-  // Emergency Actions
-  editEmergencyInfo() {
-    console.log('Edit emergency info');
-    // Implement edit emergency info
+  addContact() {
+    // Implement add contact logic
+    console.log('Add contact clicked');
   }
   
-  manageContacts() {
-    console.log('Manage contacts');
-    // Implement contact management
+  viewContact(contact: any) {
+    // Implement view contact logic
+    console.log('View contact:', contact);
   }
   
-  // Preparedness Actions
-  updatePreparedness() {
-    console.log('Preparedness updated:', this.preparednessScore);
-    if (this.preparednessScore === 100) {
-      this.triggerCelebration();
-    }
+  deleteContact(contact: any) {
+    // Implement delete contact logic
+    console.log('Delete contact:', contact);
   }
   
-  // Settings Actions
+  addLocation() {
+    // Implement add location logic
+    console.log('Add location clicked');
+  }
+  
+  deleteLocation(location: any) {
+    // Implement delete location logic
+    console.log('Delete location:', location);
+  }
+  
   toggleDarkMode() {
     document.body.classList.toggle('dark', this.settings.darkMode);
   }
   
-  toggleEmergencyAlerts() {
-    console.log('Emergency alerts toggled:', this.settings.emergencyAlerts);
-  }
-  
-  openLocationSettings() {
-    console.log('Open location settings');
-  }
-  
-  // Navigation Actions
-  viewMissions() {
-    console.log('View missions');
-    // this.router.navigate(['/missions']);
-  }
-  
-  viewTrainings() {
-    console.log('View trainings');
-    // this.router.navigate(['/trainings']);
-  }
-  
-  viewBadges() {
-    console.log('View badges');
-    // this.router.navigate(['/badges']);
-  }
-  
-  openTraining() {
-    console.log('Open training resources');
-  }
-  
-  async confirmLogout() {
-    const alert = await this.alertCtrl.create({
-      header: 'Confirm Logout',
-      message: 'Are you sure you want to sign out?',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel'
-        },
-        {
-          text: 'Logout',
-          handler: () => {
-            this.logout();
-          }
-        }
-      ]
-    });
-    
-    await alert.present();
+  changePassword() {
+    // Implement change password logic
+    console.log('Change password clicked');
   }
   
   logout() {
-    console.log('User logged out');
     // Implement logout logic
+    console.log('Logout clicked');
   }
-
-  // New methods for enhanced emergency features
-  toggleExpand(section: string) {
-    this.expandedSections[section as keyof typeof this.expandedSections] = 
-      !this.expandedSections[section as keyof typeof this.expandedSections];
+  
+  playConfetti() {
+    this.createConfetti();
   }
-
-  toggleEmergencyMode() {
-    this.isEmergencyMode = !this.isEmergencyMode;
-    if (this.isEmergencyMode) {
-      this.triggerHapticFeedback('heavy');
+  
+  createConfetti() {
+    const canvas = this.confettiCanvas.nativeElement;
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const colors = ['#6e8efb', '#a777e3', '#ff6b6b', '#4caf50', '#ffeb3b'];
+    type ConfettiPiece = {
+      x: number;
+      y: number;
+      r: number;
+      d: number;
+      color: string;
+      tilt: number;
+      tiltAngle: number;
+      tiltAngleIncrement: number;
+    };
+    const confettiPieces: ConfettiPiece[] = [];
+    
+    for (let i = 0; i < 100; i++) {
+      confettiPieces.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        r: Math.random() * 4 + 1,
+        d: Math.random() * 7 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        tilt: Math.floor(Math.random() * 10) - 10,
+        tiltAngle: Math.random() * 0.1,
+        tiltAngleIncrement: Math.random() * 0.07
+      });
     }
-  }
-
-  calculateReadinessScore(): number {
-    let score = 0;
-    if (this.user.medicalInfo.bloodType) score += 25;
-    if (this.emergencyContacts.length > 0) score += 25;
-    if (this.emergencyKitStatus.complete) score += 25;
-    if (this.user.medicalInfo.allergies?.length) score += 25;
-    return Math.min(score, 100);
-  }
-
-  getReadinessColor(): string {
-    const score = this.calculateReadinessScore();
-    if (score >= 75) return 'success';
-    if (score >= 50) return 'warning';
-    return 'danger';
-  }
-
-  async triggerSOS() {
-    if (this.sosCountdown > 0) return;
     
-    this.sosCountdown = 5;
-    const alert = await this.alertCtrl.create({
-      header: 'EMERGENCY SOS',
-      message: 'Emergency alert will trigger in 5 seconds. Cancel to abort.',
-      buttons: [
-        {
-          text: 'CANCEL',
-          role: 'cancel',
-          handler: () => {
-            clearInterval(this.sosTimer);
-            this.sosCountdown = 0;
-          }
+    let animationFrame : number;
+    const animateConfetti = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      let remaining = 0;
+      confettiPieces.forEach((p, i) => {
+        if (p.y < canvas.height) {
+          remaining++;
+          p.tiltAngle += p.tiltAngleIncrement;
+          p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+          p.tilt = Math.sin(p.tiltAngle) * 15;
+          
+          ctx.beginPath();
+          ctx.lineWidth = p.r;
+          ctx.strokeStyle = p.color;
+          ctx.moveTo(p.x + p.tilt, p.y);
+          ctx.lineTo(p.x + p.tilt + p.r * 2, p.y + p.tilt);
+          ctx.stroke();
+        } else if (i < 50 && p.y < canvas.height + 50 && p.d > 0.1) {
+          p.y = canvas.height;
+          p.d *= 0.96;
         }
-      ]
-    });
-    
-    await alert.present();
-    
-    this.sosTimer = setInterval(() => {
-      this.sosCountdown--;
-      if (this.sosCountdown <= 0) {
-        clearInterval(this.sosTimer);
-        this.sendEmergencyAlert();
+      });
+      
+      if (remaining > 0) {
+        animationFrame = requestAnimationFrame(animateConfetti);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        cancelAnimationFrame(animationFrame);
       }
-    }, 1000);
-  }
-
-  sendEmergencyAlert() {
-    console.log('EMERGENCY ALERT TRIGGERED!');
-    // Implement actual emergency alert functionality
-    this.triggerHapticFeedback('heavy');
-  }
-
-  triggerHapticFeedback(type: 'light' | 'medium' | 'heavy') {
-    // Implement haptic feedback using @capacitor/haptics
-    console.log(`Haptic feedback: ${type}`);
-  }
-
-  quickCall(event: Event, contact: any) {
-    event.stopPropagation();
-    console.log('Quick calling:', contact);
-    // Implement calling functionality
-  }
-
-  editBloodType(event: Event) {
-    event.stopPropagation();
-    console.log('Edit blood type');
-  }
-
-  editAllergies(event: Event) {
-    event.stopPropagation();
-    console.log('Edit allergies');
-  }
-
-  checkEmergencyKit() {
-    console.log('Check emergency kit');
-  }
-
-  viewEmergencyPlan() {
-    console.log('View emergency plan');
-  }
-
-  shareEmergencyInfo() {
-    console.log('Share emergency info');
-  }
-
-  printEmergencyCard() {
-    console.log('Print emergency card');
-  }
-
-  testEmergencyAlert() {
-    console.log('Test emergency alert');
-    this.triggerHapticFeedback('medium');
-  }
-
-  get preparednessScore(): number {
-    const completed = this.preparednessItems.filter(item => item.completed).length;
-    return Math.round((completed / this.preparednessItems.length) * 100);
+    };
+    
+    animateConfetti();
   }
 }

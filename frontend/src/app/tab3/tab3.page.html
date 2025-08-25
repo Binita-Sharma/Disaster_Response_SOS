@@ -1,293 +1,155 @@
-<ion-header [translucent]="true" class="profile-header">
-  <ion-toolbar color="primary">
+<ion-header>
+  <ion-toolbar class="profile-header">
     <ion-buttons slot="start">
-      <ion-button (click)="triggerCelebration()">
-        <ion-icon slot="icon-only" name="sparkles" class="celebrate-icon"></ion-icon>
+      <ion-button (click)="playConfetti()">
+        <ion-icon name="sparkles" class="sparkle-icon"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title class="header-title">Disaster Response Profile</ion-title>
+    <ion-title class="header-title">My Profile</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="toggleEditMode()">
-        <ion-icon [name]="isEditMode ? 'checkmark-circle' : 'pencil'" class="edit-mode-icon"></ion-icon>
+        <ion-icon [name]="isEditMode ? 'checkmark-circle' : 'create'" class="edit-icon"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="profile-content" (ionScroll)="handleScroll($event)">
-  <!-- Profile Hero Section -->
-  <div class="profile-hero" [class.scrolled]="contentScrolled">
-    <div class="profile-background"></div>
+<ion-content class="profile-content" [scrollEvents]="true" (ionScroll)="onScroll($event)">
+  <!-- Profile Card with Animation -->
+  <div class="profile-card" [class.card-scrolled]="isScrolled">
+    <div class="profile-bg"></div>
     <div class="profile-content-wrapper">
-      <div class="avatar-container" (click)="changeProfilePhoto()" [class.edit-active]="isEditMode">
-        <ion-avatar class="user-avatar">
-          <img [src]="user.profileImage || 'assets/img/profile.jpg'" alt="User profile" />
-          <div class="edit-badge" *ngIf="isEditMode">
+      <div class="avatar-wrapper" (click)="changePhoto()" [class.edit-mode]="isEditMode">
+        <ion-avatar class="profile-avatar pulse-animation">
+          <img [src]="user.photo || 'assets/default-profile.png'" alt="Profile Photo" />
+          <div class="change-photo-hint" *ngIf="isEditMode">
             <ion-icon name="camera"></ion-icon>
           </div>
         </ion-avatar>
-        <div class="verification-badge" *ngIf="user.isVerified">
-          <ion-icon name="checkmark-circle"></ion-icon>
-        </div>
+        <div class="status-dot" [class.active]="user.isActive"></div>
       </div>
-
-      <div class="user-info">
+      
+      <div class="profile-info">
         <h2 class="user-name" [contentEditable]="isEditMode">{{ user.name }}</h2>
-        <p class="user-role">{{ user.role }}</p>
-        <ion-chip outline color="warning" class="response-level">
-          <ion-icon name="alert-circle"></ion-icon>
-          <ion-label>Response Level: {{ user.responseLevel }}</ion-label>
+        <p class="user-email">{{ user.email }}</p>
+        <ion-chip class="member-since" outline>
+          <ion-icon name="calendar"></ion-icon>
+          <ion-label>Member since {{ user.joinDate }}</ion-label>
         </ion-chip>
       </div>
     </div>
-
-    <div class="quick-stats">
-      <div class="stat-item" *ngFor="let stat of quickStats" (click)="stat.action()">
+    
+    <div class="stats-wrapper">
+      <div class="stat-item" *ngFor="let stat of userStats" (click)="stat.action()">
         <div class="stat-value">{{ stat.value }}</div>
         <div class="stat-label">{{ stat.label }}</div>
       </div>
     </div>
   </div>
 
-<!-- Enhanced Emergency Information Section -->
-<ion-card class="emergency-card" [class.emergency-mode]="isEmergencyMode">
-  <div class="emergency-alert-banner" *ngIf="isEmergencyMode">
-    <ion-icon name="alert-circle"></ion-icon>
-    <span>Emergency Mode Active</span>
-    <ion-button fill="clear" size="small" color="light" (click)="toggleEmergencyMode()">
-      Disable
-    </ion-button>
-  </div>
-
-  <ion-card-header class="emergency-header">
-    <div class="header-content">
-      <div class="title-section">
-        <ion-icon name="warning" class="pulse-icon"></ion-icon>
-        <ion-card-title>Emergency Readiness</ion-card-title>
-        <ion-badge [color]="getReadinessColor()" class="readiness-badge">
-          {{ calculateReadinessScore() }}% Ready
-        </ion-badge>
-      </div>
-      <ion-button fill="clear" size="small" (click)="toggleEmergencyMode()" [color]="isEmergencyMode ? 'light' : 'primary'">
-        <ion-icon [name]="isEmergencyMode ? 'flash-off' : 'flash'" slot="icon-only"></ion-icon>
-      </ion-button>
-    </div>
-    
-    <ion-progress-bar 
-      [value]="calculateReadinessScore() / 100" 
-      [color]="getReadinessColor()"
-      class="readiness-progress">
-    </ion-progress-bar>
-  </ion-card-header>
-
-  <ion-list lines="none" class="emergency-info-list">
-    <!-- Medical Information with Expandable Details -->
-    <ion-item class="info-item expandable" (click)="toggleExpand('medical')" [class.expanded]="expandedSections.medical">
-      <div class="item-content">
-        <div class="item-header">
-          <ion-icon 
-            name="medkit" 
-            [color]="user.medicalInfo.bloodType ? 'success' : 'warning'" 
-            class="item-icon pulse-animation">
-          </ion-icon>
-          <ion-label>
-            <h3>Medical Information</h3>
-            <p>{{ user.medicalInfo.bloodType ? 'Complete' : 'Needs attention' }}</p>
-          </ion-label>
-        </div>
-        <ion-icon 
-          [name]="expandedSections.medical ? 'chevron-up' : 'chevron-down'" 
-          class="expand-icon">
-        </ion-icon>
-      </div>
-    </ion-item>
-
-    <div class="expandable-content" [class.expanded]="expandedSections.medical">
-      <ion-item>
-        <ion-icon name="water" slot="start" color="danger"></ion-icon>
-        <ion-label>
-          <h4>Blood Type</h4>
-          <p>{{ user.medicalInfo.bloodType || 'Not specified' }}</p>
-        </ion-label>
-        <ion-button fill="clear" size="small" (click)="editBloodType($event)">
-          <ion-icon name="create" slot="icon-only"></ion-icon>
-        </ion-button>
-      </ion-item>
-
-      <ion-item>
-        <ion-icon name="alert-circle" slot="start" color="warning"></ion-icon>
-        <ion-label>
-          <h4>Allergies & Conditions</h4>
-          <p>{{ user.medicalInfo.allergies?.join(', ') || 'None reported' }}</p>
-        </ion-label>
-        <ion-button fill="clear" size="small" (click)="editAllergies($event)">
-          <ion-icon name="create" slot="icon-only"></ion-icon>
-        </ion-button>
-      </ion-item>
-
-      <ion-item>
-        <ion-icon name="medical" slot="start" color="tertiary"></ion-icon>
-        <ion-label>
-          <h4>Medications</h4>
-          <p>{{ user.medicalInfo.medications?.join(', ') || 'None listed' }}</p>
-        </ion-label>
-      </ion-item>
-    </div>
-
-    <!-- Emergency Contacts with Quick Action -->
-    <ion-item class="info-item" (click)="manageContacts()">
-      <div class="item-content">
-        <div class="item-header">
-          <ion-icon 
-            name="people" 
-            [color]="emergencyContacts.length > 0 ? 'success' : 'danger'" 
-            class="item-icon">
-          </ion-icon>
-          <ion-label>
-            <h3>Emergency Contacts</h3>
-            <p>{{ emergencyContacts.length }} contact(s) configured</p>
-          </ion-label>
-        </div>
-        <div class="contact-actions">
-          <ion-button fill="clear" size="small" (click)="quickCall($event, emergencyContacts[0])" *ngIf="emergencyContacts.length > 0">
-            <ion-icon name="call" color="success"></ion-icon>
+  <!-- Interactive Sections with Slide Animation -->
+  <ion-slides [options]="slideOpts" class="profile-sections">
+    <!-- Contacts Section -->
+    <ion-slide>
+      <div class="section-card contacts-section">
+        <div class="section-header">
+          <h3><ion-icon name="people" class="section-icon"></ion-icon> Connections</h3>
+          <ion-button fill="clear" size="small" (click)="addContact()">
+            <ion-icon name="add" slot="icon-only"></ion-icon>
           </ion-button>
-          <ion-icon name="chevron-forward" class="forward-icon"></ion-icon>
+        </div>
+        
+        <div class="contacts-grid">
+          <div class="contact-item" *ngFor="let contact of emergencyContacts" 
+               (click)="viewContact(contact)" [@slideIn]>
+            <ion-avatar class="contact-avatar">
+              <img [src]="contact.photo || 'assets/default-contact.png'" />
+            </ion-avatar>
+            <div class="contact-info">
+              <h4>{{ contact.name }}</h4>
+              <p>{{ contact.relationship }}</p>
+            </div>
+            <ion-badge *ngIf="contact.isEmergency" color="danger" class="emergency-badge">EMG</ion-badge>
+          </div>
         </div>
       </div>
-    </ion-item>
+    </ion-slide>
 
-    <!-- Emergency Kit Status -->
-    <ion-item class="info-item" (click)="checkEmergencyKit()">
-      <div class="item-content">
-        <div class="item-header">
-          <ion-icon 
-            name="briefcase" 
-            [color]="emergencyKitStatus.complete ? 'success' : 'warning'" 
-            class="item-icon">
-          </ion-icon>
-          <ion-label>
-            <h3>Emergency Kit</h3>
-            <p>{{ emergencyKitStatus.complete ? 'Complete' : 'Needs review' }}</p>
-          </ion-label>
+    <!-- Locations Section -->
+    <ion-slide>
+      <div class="section-card locations-section">
+        <div class="section-header">
+          <h3><ion-icon name="map" class="section-icon"></ion-icon> Saved Places</h3>
+          <ion-button fill="clear" size="small" (click)="addLocation()">
+            <ion-icon name="add" slot="icon-only"></ion-icon>
+          </ion-button>
         </div>
-        <ion-badge [color]="emergencyKitStatus.complete ? 'success' : 'warning'">
-          {{ emergencyKitStatus.itemsChecked }}/{{ emergencyKitStatus.totalItems }}
-        </ion-badge>
-      </div>
-    </ion-item>
-
-    <!-- Emergency Plan -->
-    <ion-item class="info-item" (click)="viewEmergencyPlan()">
-      <div class="item-content">
-        <div class="item-header">
-          <ion-icon name="document-text" color="primary" class="item-icon"></ion-icon>
-          <ion-label>
-            <h3>Emergency Plan</h3>
-            <p>Family meeting points & procedures</p>
-          </ion-label>
+        
+        <div class="locations-list">
+          <div class="location-item" *ngFor="let location of savedLocations" [@fadeIn]>
+            <ion-icon name="location" class="location-icon"></ion-icon>
+            <div class="location-details">
+              <h4>{{ location.name }}</h4>
+              <p>{{ location.address }}</p>
+            </div>
+            <ion-button fill="clear" color="medium" (click)="deleteLocation(location); $event.stopPropagation()">
+              <ion-icon name="close" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
         </div>
-        <ion-icon name="document" color="medium"></ion-icon>
       </div>
-    </ion-item>
+    </ion-slide>
 
-    <!-- SOS Quick Action -->
-    <ion-item class="sos-item" *ngIf="isEmergencyMode">
-      <ion-button 
-        expand="block" 
-        color="danger" 
-        fill="solid" 
-        (click)="triggerSOS()"
-        class="sos-button pulse-alert">
-        <ion-icon name="alert-circle" slot="start"></ion-icon>
-        EMERGENCY SOS
-        <div class="sos-countdown" *ngIf="sosCountdown > 0">{{ sosCountdown }}</div>
-      </ion-button>
-    </ion-item>
-  </ion-list>
+    <!-- Settings Section -->
+    <ion-slide>
+      <div class="section-card settings-section">
+        <div class="section-header">
+          <h3><ion-icon name="settings" class="section-icon"></ion-icon> Preferences</h3>
+        </div>
+        
+        <div class="settings-list">
+          <div class="setting-item" (click)="toggleDarkMode()">
+            <div class="setting-info">
+              <ion-icon name="moon" class="setting-icon"></ion-icon>
+              <div class="setting-details">
+                <h4>Dark Mode</h4>
+                <p>Switch between light and dark theme</p>
+              </div>
+            </div>
+            <ion-toggle [(ngModel)]="settings.darkMode"></ion-toggle>
+          </div>
+          
+          <div class="setting-item">
+            <div class="setting-info">
+              <ion-icon name="notifications" class="setting-icon"></ion-icon>
+              <div class="setting-details">
+                <h4>Notifications</h4>
+                <p>Manage app notifications</p>
+              </div>
+            </div>
+            <ion-toggle [(ngModel)]="settings.notifications"></ion-toggle>
+          </div>
+          
+          <div class="setting-item" (click)="changePassword()">
+            <div class="setting-info">
+              <ion-icon name="key" class="setting-icon"></ion-icon>
+              <div class="setting-details">
+                <h4>Change Password</h4>
+                <p>Update your account password</p>
+              </div>
+            </div>
+            <ion-icon name="chevron-forward" class="forward-icon"></ion-icon>
+          </div>
+        </div>
+        
+        <ion-button expand="block" color="danger" fill="outline" class="logout-btn" (click)="logout()">
+          <ion-icon name="log-out" slot="start"></ion-icon>
+          Sign Out
+        </ion-button>
+      </div>
+    </ion-slide>
+  </ion-slides>
 
-  <!-- Quick Actions Footer -->
-  <ion-card-content class="quick-actions" *ngIf="!isEmergencyMode">
-    <ion-button fill="clear" size="small" (click)="shareEmergencyInfo()">
-      <ion-icon name="share-social" slot="start"></ion-icon>
-      Share Info
-    </ion-button>
-    <ion-button fill="clear" size="small" (click)="printEmergencyCard()">
-      <ion-icon name="print" slot="start"></ion-icon>
-      Print Card
-    </ion-button>
-    <ion-button fill="clear" size="small" (click)="testEmergencyAlert()">
-      <ion-icon name="notifications" slot="start"></ion-icon>
-      Test Alert
-    </ion-button>
-  </ion-card-content>
-</ion-card>
-
-<!-- Disaster Preparedness Section -->
-  <ion-card class="preparedness-card">
-    <ion-card-header>
-      <ion-card-title>
-        <ion-icon name="shield-checkmark" class="section-icon"></ion-icon>
-        My Preparedness
-      </ion-card-title>
-      <ion-badge color="success" mode="ios">{{ preparednessScore }}/100</ion-badge>
-    </ion-card-header>
-
-    <ion-list lines="none">
-      <ion-item *ngFor="let item of preparednessItems">
-        <ion-icon [name]="item.icon" slot="start" [color]="item.completed ? 'success' : 'medium'"></ion-icon>
-        <ion-label>
-          <h3>{{ item.name }}</h3>
-          <p>{{ item.description }}</p>
-        </ion-label>
-        <ion-toggle slot="end" [(ngModel)]="item.completed" (ionChange)="updatePreparedness()"></ion-toggle>
-      </ion-item>
-    </ion-list>
-  </ion-card>
-
-  <!-- App Settings Section -->
-  <ion-card class="settings-card">
-    <ion-card-header>
-      <ion-card-title>
-        <ion-icon name="settings" class="section-icon"></ion-icon>
-        App Configuration
-      </ion-card-title>
-    </ion-card-header>
-
-    <ion-list lines="none">
-      <ion-item button (click)="toggleDarkMode()">
-        <ion-icon name="moon" slot="start" color="tertiary"></ion-icon>
-        <ion-label>Dark Mode</ion-label>
-        <ion-toggle slot="end" [(ngModel)]="settings.darkMode"></ion-toggle>
-      </ion-item>
-      <ion-item button (click)="toggleEmergencyAlerts()">
-        <ion-icon name="notifications" slot="start" color="warning"></ion-icon>
-        <ion-label>Emergency Alerts</ion-label>
-        <ion-toggle slot="end" [(ngModel)]="settings.emergencyAlerts"></ion-toggle>
-      </ion-item>
-      <ion-item button (click)="openLocationSettings()">
-        <ion-icon name="location" slot="start" color="primary"></ion-icon>
-        <ion-label>Location Sharing</ion-label>
-        <ion-toggle slot="end" [(ngModel)]="settings.locationSharing"></ion-toggle>
-      </ion-item>
-    </ion-list>
-  </ion-card>
-
-  <!-- Action Buttons -->
-  <div class="action-buttons">
-    <ion-button expand="block" fill="outline" color="medium" (click)="openTraining()">
-      <ion-icon name="school" slot="start"></ion-icon>
-      Training Resources
-    </ion-button>
-    <ion-button expand="block" color="danger" (click)="confirmLogout()">
-      <ion-icon name="log-out" slot="start"></ion-icon>
-      Sign Out
-    </ion-button>
-  </div>
-
-  <!-- Celebration Elements -->
-  <div class="confetti-container" *ngIf="showConfetti">
-    <div class="confetti" *ngFor="let confetti of confettiPieces" [style.left.px]="confetti.left"
-      [style.animation-delay.ms]="confetti.delay" [style.background]="confetti.color"></div>
-  </div>
+  <!-- Confetti Canvas (hidden) -->
+  <canvas #confettiCanvas class="confetti-canvas"></canvas>
 </ion-content>
