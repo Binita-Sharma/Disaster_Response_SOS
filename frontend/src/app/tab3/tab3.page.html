@@ -63,7 +63,7 @@
           <div class="contact-item" *ngFor="let contact of emergencyContacts" 
                (click)="viewContact(contact)" [@slideIn]>
             <ion-avatar class="contact-avatar">
-              <img [src]="contact.photo || 'assets/default-contact.png'" />
+              <img src ="contact.photo " alt="contact" />
             </ion-avatar>
             <div class="contact-info">
               <h4>{{ contact.name }}</h4>
