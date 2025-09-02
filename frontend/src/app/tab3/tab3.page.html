@@ -47,108 +47,117 @@
     </div>
   </div>
 
-  <!-- Interactive Sections with Slide Animation -->
-  <ion-slides [options]="slideOpts" class="profile-sections">
-    <!-- Contacts Section -->
-    <ion-slide>
-      <div class="section-card contacts-section">
-        <div class="section-header">
-          <h3><ion-icon name="people" class="section-icon"></ion-icon> Connections</h3>
-          <ion-button fill="clear" size="small" (click)="addContact()">
-            <ion-icon name="add" slot="icon-only"></ion-icon>
-          </ion-button>
-        </div>
-        
-        <div class="contacts-grid">
-          <div class="contact-item" *ngFor="let contact of emergencyContacts" 
-               (click)="viewContact(contact)" [@slideIn]>
-            <ion-avatar class="contact-avatar">
-              <img src ="contact.photo " alt="contact" />
-            </ion-avatar>
-            <div class="contact-info">
-              <h4>{{ contact.name }}</h4>
-              <p>{{ contact.relationship }}</p>
-            </div>
-            <ion-badge *ngIf="contact.isEmergency" color="danger" class="emergency-badge">EMG</ion-badge>
-          </div>
-        </div>
-      </div>
-    </ion-slide>
-
-    <!-- Locations Section -->
-    <ion-slide>
-      <div class="section-card locations-section">
-        <div class="section-header">
-          <h3><ion-icon name="map" class="section-icon"></ion-icon> Saved Places</h3>
-          <ion-button fill="clear" size="small" (click)="addLocation()">
-            <ion-icon name="add" slot="icon-only"></ion-icon>
-          </ion-button>
-        </div>
-        
-        <div class="locations-list">
-          <div class="location-item" *ngFor="let location of savedLocations" [@fadeIn]>
-            <ion-icon name="location" class="location-icon"></ion-icon>
-            <div class="location-details">
-              <h4>{{ location.name }}</h4>
-              <p>{{ location.address }}</p>
-            </div>
-            <ion-button fill="clear" color="medium" (click)="deleteLocation(location); $event.stopPropagation()">
-              <ion-icon name="close" slot="icon-only"></ion-icon>
+  <!-- Interactive Sections with Swiper -->
+  <div class="swiper profile-sections" #swiperContainer>
+    <div class="swiper-wrapper">
+      <!-- Contacts Section -->
+      <div class="swiper-slide">
+        <div class="section-card contacts-section">
+          <div class="section-header">
+            <h3><ion-icon name="people" class="section-icon"></ion-icon> Connections</h3>
+            <ion-button fill="clear" size="small" (click)="addContact()">
+              <ion-icon name="add" slot="icon-only"></ion-icon>
             </ion-button>
           </div>
+          
+          <div class="contacts-grid">
+            <div class="contact-item" *ngFor="let contact of emergencyContacts" 
+                 (click)="viewContact(contact)" [@slideIn]>
+              <ion-avatar class="contact-avatar">
+                <img [src]="contact.photo || 'assets/default-contact.png'" alt="contact" />
+              </ion-avatar>
+              <div class="contact-info">
+                <h4>{{ contact.name }}</h4>
+                <p>{{ contact.relationship }}</p>
+              </div>
+              <ion-badge *ngIf="contact.isEmergency" color="danger" class="emergency-badge">EMG</ion-badge>
+            </div>
+          </div>
         </div>
       </div>
-    </ion-slide>
 
-    <!-- Settings Section -->
-    <ion-slide>
-      <div class="section-card settings-section">
-        <div class="section-header">
-          <h3><ion-icon name="settings" class="section-icon"></ion-icon> Preferences</h3>
-        </div>
-        
-        <div class="settings-list">
-          <div class="setting-item" (click)="toggleDarkMode()">
-            <div class="setting-info">
-              <ion-icon name="moon" class="setting-icon"></ion-icon>
-              <div class="setting-details">
-                <h4>Dark Mode</h4>
-                <p>Switch between light and dark theme</p>
-              </div>
-            </div>
-            <ion-toggle [(ngModel)]="settings.darkMode"></ion-toggle>
+      <!-- Locations Section -->
+      <div class="swiper-slide">
+        <div class="section-card locations-section">
+          <div class="section-header">
+            <h3><ion-icon name="map" class="section-icon"></ion-icon> Saved Places</h3>
+            <ion-button fill="clear" size="small" (click)="addLocation()">
+              <ion-icon name="add" slot="icon-only"></ion-icon>
+            </ion-button>
           </div>
           
-          <div class="setting-item">
-            <div class="setting-info">
-              <ion-icon name="notifications" class="setting-icon"></ion-icon>
-              <div class="setting-details">
-                <h4>Notifications</h4>
-                <p>Manage app notifications</p>
+          <div class="locations-list">
+            <div class="location-item" *ngFor="let location of savedLocations" [@fadeIn]>
+              <ion-icon name="location" class="location-icon"></ion-icon>
+              <div class="location-details">
+                <h4>{{ location.name }}</h4>
+                <p>{{ location.address }}</p>
               </div>
+              <ion-button fill="clear" color="medium" (click)="deleteLocation(location); $event.stopPropagation()">
+                <ion-icon name="close" slot="icon-only"></ion-icon>
+              </ion-button>
             </div>
-            <ion-toggle [(ngModel)]="settings.notifications"></ion-toggle>
-          </div>
-          
-          <div class="setting-item" (click)="changePassword()">
-            <div class="setting-info">
-              <ion-icon name="key" class="setting-icon"></ion-icon>
-              <div class="setting-details">
-                <h4>Change Password</h4>
-                <p>Update your account password</p>
-              </div>
-            </div>
-            <ion-icon name="chevron-forward" class="forward-icon"></ion-icon>
           </div>
         </div>
-        
-        <ion-button expand="block" color="danger" fill="outline" class="logout-btn" (click)="logout()">
-          <ion-icon name="log-out" slot="start"></ion-icon>
-          Sign Out
-        </ion-button>
       </div>
-    </ion-slide>
-  </ion-slides>
+
+      <!-- Settings Section -->
+      <div class="swiper-slide">
+        <div class="section-card settings-section">
+          <div class="section-header">
+            <h3><ion-icon name="settings" class="section-icon"></ion-icon> Preferences</h3>
+          </div>
+          
+          <div class="settings-list">
+            <div class="setting-item" (click)="toggleDarkMode()">
+              <div class="setting-info">
+                <ion-icon name="moon" class="setting-icon"></ion-icon>
+                <div class="setting-details">
+                  <h4>Dark Mode</h4>
+                  <p>Switch between light and dark theme</p>
+                </div>
+              </div>
+              <ion-toggle [(ngModel)]="settings.darkMode"></ion-toggle>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-info">
+                <ion-icon name="notifications" class="setting-icon"></ion-icon>
+                <div class="setting-details">
+                  <h4>Notifications</h4>
+                  <p>Manage app notifications</p>
+                </div>
+              </div>
+              <ion-toggle [(ngModel)]="settings.notifications"></ion-toggle>
+            </div>
+            
+            <div class="setting-item" (click)="changePassword()">
+              <div class="setting-info">
+                <ion-icon name="key" class="setting-icon"></ion-icon>
+                <div class="setting-details">
+                  <h4>Change Password</h4>
+                  <p>Update your account password</p>
+                </div>
+              </div>
+              <ion-icon name="chevron-forward" class="forward-icon"></ion-icon>
+            </div>
+          </div>
+          
+          <ion-button expand="block" color="danger" fill="outline" class="logout-btn" (click)="logout()">
+            <ion-icon name="log-out" slot="start"></ion-icon>
+            Sign Out
+          </ion-button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Swiper Pagination -->
+    <div class="swiper-pagination"></div>
+    
+    <!-- Optional Navigation Buttons -->
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+  </div>
 
   <!-- Confetti Canvas (hidden) -->
   <canvas #confettiCanvas class="confetti-canvas"></canvas>

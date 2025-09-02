@@ -1,8 +1,10 @@
-import { Component, ElementRef, ViewChild, OnInit, Renderer2, NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { AnimationController, IonicModule, IonSlides } from '@ionic/angular';
+import { Component, ElementRef, ViewChild, OnInit, Renderer2 } from '@angular/core';
+import { AnimationController, IonicModule } from '@ionic/angular';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import Swiper from 'swiper';
+import { SwiperOptions } from 'swiper/types';
 
 @Component({
   selector: 'app-tab3',
@@ -10,7 +12,6 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./tab3.page.scss'],
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA], 
   animations: [
     trigger('slideIn', [
       transition(':enter', [
@@ -28,10 +29,11 @@ import { FormsModule } from '@angular/forms';
 })
 export class Tab3Page implements OnInit {
   @ViewChild('confettiCanvas') confettiCanvas!: ElementRef;
-  @ViewChild(IonSlides) slides!: IonSlides;
+  @ViewChild('swiperContainer') swiperContainer!: ElementRef;
   
   isScrolled = false;
   isEditMode = false;
+  private swiper!: Swiper;
   
   user = {
     name: 'Alex Johnson',
@@ -64,13 +66,21 @@ export class Tab3Page implements OnInit {
     notifications: true
   };
   
-  slideOpts = {
+  swiperConfig: SwiperOptions = {
     initialSlide: 0,
     speed: 300,
     slidesPerView: 1,
     spaceBetween: 20,
     centeredSlides: true,
-    effect: 'slide'
+    effect: 'slide',
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true
+    },
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev'
+    }
   };
 
   constructor(
@@ -80,6 +90,14 @@ export class Tab3Page implements OnInit {
   
   ngOnInit() {
     this.setupAvatarAnimation();
+  }
+  
+  ngAfterViewInit() {
+    this.initSwiper();
+  }
+  
+  private initSwiper() {
+    this.swiper = new Swiper(this.swiperContainer.nativeElement, this.swiperConfig);
   }
   
   setupAvatarAnimation() {
@@ -127,7 +145,9 @@ export class Tab3Page implements OnInit {
   }
   
   slideTo(index: number) {
-    this.slides.slideTo(index);
+    if (this.swiper) {
+      this.swiper.slideTo(index);
+    }
   }
   
   showPointsInfo() {
@@ -215,7 +235,7 @@ export class Tab3Page implements OnInit {
       });
     }
     
-    let animationFrame : number;
+    let animationFrame: number;
     const animateConfetti = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
@@ -243,7 +263,9 @@ export class Tab3Page implements OnInit {
         animationFrame = requestAnimationFrame(animateConfetti);
       } else {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        cancelAnimationFrame(animationFrame);
+        if (animationFrame) {
+          cancelAnimationFrame(animationFrame);
+        }
       }
     };
     
