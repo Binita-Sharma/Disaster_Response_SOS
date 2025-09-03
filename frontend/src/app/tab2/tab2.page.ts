@@ -3,7 +3,7 @@ import { IonicModule, AlertController, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate, query, stagger, keyframes } from '@angular/animations';
-import { Browser } from '@capacitor/browser';
+//import { Browser } from '@capacitor/browser';
 import { Share } from '@capacitor/share';
 
 @Component({
@@ -207,11 +207,12 @@ export class Tab2Page implements OnInit, OnDestroy {
     }
     
     // Apply sort order
+    const priorityOrder: { [key: string]: number } = { high: 3, medium: 2, low: 1 };
+    
     filtered.sort((a, b) => {
       if (this.sortOrder === 'newest') {
         return new Date(b.time).getTime() - new Date(a.time).getTime();
       } else {
-        const priorityOrder = { high: 3, medium: 2, low: 1 };
         return priorityOrder[b.priority] - priorityOrder[a.priority] || 
                new Date(b.time).getTime() - new Date(a.time).getTime();
       }
@@ -418,5 +419,17 @@ export class Tab2Page implements OnInit, OnDestroy {
       day: '2-digit',
       month: 'short'
     }).format(date);
+  }
+
+  getTimeAgo(date: Date): string {
+    if (!date) return '';
+    
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - new Date(date).getTime()) / 1000);
+    
+    if (seconds < 60) return 'just now';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)} hr ago`;
+    return `${Math.floor(seconds / 86400)} days ago`;
   }
 }

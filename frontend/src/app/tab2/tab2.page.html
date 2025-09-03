@@ -52,8 +52,8 @@
         <ion-icon [name]="getAlertIcon(criticalAlert.type)" class="pulse-icon"></ion-icon>
       </div>
       <div class="banner-text">
-        <h3>🚨 CRITICAL: {{criticalAlert.type | uppercase}}</h3>
-        <p>{{criticalAlert.location}} • {{criticalAlert.time | timeAgo}}</p>
+        <h3>CRITICAL: {{criticalAlert.type | uppercase}}</h3>
+        <p>{{criticalAlert.location}} • {{getTimeAgo(criticalAlert.time)}}</p>
       </div>
       <div class="banner-actions">
         <ion-button fill="clear" color="light" (click)="$event.stopPropagation(); navigateToLocation(criticalAlert)">
@@ -214,7 +214,7 @@
           </div>
           <div class="meta-item">
             <ion-icon name="time"></ion-icon>
-            <span>{{alert.time | timeAgo}}</span>
+            <span>{{getTimeAgo(alert.time)}}</span>
           </div>
         </div>
       </ion-label>

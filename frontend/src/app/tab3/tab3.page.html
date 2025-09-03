@@ -21,7 +21,7 @@
     <div class="profile-content-wrapper">
       <div class="avatar-wrapper" (click)="changePhoto()" [class.edit-mode]="isEditMode">
         <ion-avatar class="profile-avatar pulse-animation">
-          <img [src]="user.photo || 'assets/default-profile.png'" alt="Profile Photo" />
+          <img src= 'assets\img\profile.jpg' alt="Profile Photo" />
           <div class="change-photo-hint" *ngIf="isEditMode">
             <ion-icon name="camera"></ion-icon>
           </div>
